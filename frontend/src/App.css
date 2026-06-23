@@ -1,0 +1,45 @@
+/* App-level styles */
+.App {
+  min-height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: hsl(240 6% 7%);
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(240 4% 18%);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(240 4% 26%);
+}
+
+/* Subtle grain texture utility */
+.grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Editor styles for blog post content */
+.prose-pulse p { margin-bottom: 1.1rem; line-height: 1.75; }
+.prose-pulse h2 { font-family: 'Fraunces', serif; font-size: 1.875rem; margin: 2rem 0 1rem; letter-spacing: -0.01em; }
+.prose-pulse blockquote { border-left: 2px solid #10b981; padding-left: 1rem; font-family: 'Fraunces', serif; font-size: 1.25rem; color: #d4d4d8; margin: 1.5rem 0; }
+
+/* Reset App default centering - intentional */
+.App { text-align: left; }
+
+/* Smooth fade for route transitions */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: fadeUp 280ms ease-out both; }
