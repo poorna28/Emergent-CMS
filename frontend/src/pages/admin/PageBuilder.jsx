@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import * as Icons from 'lucide-react';
 import {
   Trash2, GripVertical, Pencil, ChevronUp, ChevronDown, Eye, Save,
-  Plus, X, Layers, ArrowLeft
+  Plus, X, Layers, ArrowLeft, FileCode2, Code
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,9 +14,13 @@ import {
 } from '@/components/ui/select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { SECTION_TYPES, loadSections, saveSections, makeSection } from '@/components/admin/sections/sectionTypes';
 import SectionRenderer from '@/components/admin/sections/SectionRenderer';
+import SectionBlocks from '@/components/admin/sections/SectionBlocks';
+import SectionHTMLView from '@/components/admin/sections/SectionHTMLView';
+import DevicePreviewBar, { DEVICE_PRESETS } from '@/components/admin/DevicePreviewBar';
 import { IMAGES } from '@/mock/mock';
 
 const typeKeys = Object.keys(SECTION_TYPES);
@@ -93,6 +97,8 @@ export default function PageBuilder() {
   const [sections, setSections] = useState(() => loadSections());
   const [activeId, setActiveId] = useState(null);
   const [dragOverIdx, setDragOverIdx] = useState(null);
+  const [device, setDevice] = useState('desktop');
+  const [htmlSection, setHtmlSection] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => { saveSections(sections); }, [sections]);
@@ -100,6 +106,7 @@ export default function PageBuilder() {
   const active = useMemo(() => sections.find(s => s.id === activeId), [activeId, sections]);
 
   const updateContent = (id, key, val) => setSections(prev => prev.map(s => s.id === id ? { ...s, content: { ...s.content, [key]: val } } : s));
+  const updateSection = (id, patch) => setSections(prev => prev.map(s => s.id === id ? { ...s, ...patch } : s));
   const move = (idx, dir) => {
     const j = idx + dir;
     if (j < 0 || j >= sections.length) return;
@@ -148,13 +155,15 @@ export default function PageBuilder() {
             <div className="text-xs uppercase tracking-[0.18em] text-emerald-400/80">Page builder</div>
             <div className="text-sm text-zinc-100 -mt-0.5">Home — {sections.length} sections</div>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-3">
+            <DevicePreviewBar device={device} onChange={setDevice} />
             <Button variant="outline" asChild className="border-zinc-800 bg-zinc-900"><Link to="/site/preview" target="_blank"><Eye className="size-4 mr-1.5" /> Preview</Link></Button>
             <Button onClick={() => toast({ title: 'Layout saved', description: `${sections.length} sections` })} className="bg-emerald-500 hover:bg-emerald-400 text-zinc-950"><Save className="size-4 mr-1.5" /> Save</Button>
           </div>
         </div>
 
         <div className="flex-1 overflow-x-hidden">
+          <div className="mx-auto transition-[max-width] duration-300 ease-out" style={{ maxWidth: DEVICE_PRESETS[device].width }}>
           <div
             onDragOver={(e) => { e.preventDefault(); setDragOverIdx(0); }}
             onDrop={(e) => onDrop(e, 0)}
@@ -176,6 +185,7 @@ export default function PageBuilder() {
                     <button onClick={(e) => { e.stopPropagation(); move(idx, -1); }} className="size-8 rounded-md bg-zinc-900/90 border border-zinc-800 text-zinc-300 hover:text-zinc-100 grid place-items-center" title="Move up"><ChevronUp className="size-4" /></button>
                     <button onClick={(e) => { e.stopPropagation(); move(idx, 1); }} className="size-8 rounded-md bg-zinc-900/90 border border-zinc-800 text-zinc-300 hover:text-zinc-100 grid place-items-center" title="Move down"><ChevronDown className="size-4" /></button>
                     <button onClick={(e) => { e.stopPropagation(); setActiveId(s.id); }} className="size-8 rounded-md bg-zinc-900/90 border border-zinc-800 text-emerald-300 hover:text-emerald-200 grid place-items-center" title="Edit"><Pencil className="size-4" /></button>
+                    <button onClick={(e) => { e.stopPropagation(); setHtmlSection(s); }} className="size-8 rounded-md bg-zinc-900/90 border border-zinc-800 text-zinc-300 hover:text-emerald-300 grid place-items-center" title="View HTML"><Code className="size-4" /></button>
                     <button onClick={(e) => { e.stopPropagation(); removeAt(s.id); }} className="size-8 rounded-md bg-zinc-900/90 border border-red-500/30 text-red-400 hover:text-red-300 grid place-items-center" title="Delete"><Trash2 className="size-4" /></button>
                   </div>
                   <div className="pointer-events-none">
@@ -201,11 +211,14 @@ export default function PageBuilder() {
           <div className="mx-4 my-6 border border-dashed border-zinc-800 rounded-xl p-6 text-center text-zinc-500 text-sm">
             Drop more sections here — or use the library on the left
           </div>
+          </div>
         </div>
       </div>
 
+      <SectionHTMLView open={!!htmlSection} onOpenChange={(o) => { if (!o) setHtmlSection(null); }} section={htmlSection} />
+
       <Sheet open={!!active} onOpenChange={(o) => { if (!o) setActiveId(null); }}>
-        <SheetContent className="bg-zinc-900 border-zinc-800 text-zinc-100 w-full sm:max-w-md overflow-y-auto">
+        <SheetContent className="bg-zinc-900 border-zinc-800 text-zinc-100 w-full sm:max-w-lg overflow-y-auto">
           {active && (
             <>
               <SheetHeader>
@@ -214,15 +227,34 @@ export default function PageBuilder() {
                   Edit {SECTION_TYPES[active.type].name}
                 </SheetTitle>
               </SheetHeader>
-              <div className="mt-6 space-y-5">
-                {SECTION_TYPES[active.type].fields.length === 0 && <div className="text-sm text-zinc-500">This section has no properties.</div>}
-                {SECTION_TYPES[active.type].fields.map(f => (
-                  <div key={f.key}>
-                    <div className="text-xs text-zinc-400 mb-1.5 uppercase tracking-wider">{f.label}</div>
-                    <PropertyField field={f} value={active.content[f.key]} onChange={(v) => updateContent(active.id, f.key, v)} />
-                  </div>
-                ))}
-              </div>
+              <Tabs defaultValue="props" className="mt-5">
+                <TabsList className="bg-zinc-950 border border-zinc-800 w-full">
+                  <TabsTrigger value="props" className="flex-1 data-[state=active]:bg-emerald-400/10 data-[state=active]:text-emerald-300">Properties</TabsTrigger>
+                  <TabsTrigger value="blocks" className="flex-1 data-[state=active]:bg-emerald-400/10 data-[state=active]:text-emerald-300">Inner blocks {active.extraBlocks?.length ? <span className="ml-1 text-[10px] mono text-zinc-500">{active.extraBlocks.length}</span> : null}</TabsTrigger>
+                  <TabsTrigger value="html" className="flex-1 data-[state=active]:bg-emerald-400/10 data-[state=active]:text-emerald-300">HTML</TabsTrigger>
+                </TabsList>
+                <TabsContent value="props" className="mt-4 space-y-5">
+                  {SECTION_TYPES[active.type].fields.length === 0 && <div className="text-sm text-zinc-500">This section has no properties.</div>}
+                  {SECTION_TYPES[active.type].fields.map(f => (
+                    <div key={f.key}>
+                      <div className="text-xs text-zinc-400 mb-1.5 uppercase tracking-wider">{f.label}</div>
+                      <PropertyField field={f} value={active.content[f.key]} onChange={(v) => updateContent(active.id, f.key, v)} />
+                    </div>
+                  ))}
+                </TabsContent>
+                <TabsContent value="blocks" className="mt-4">
+                  <SectionBlocks
+                    blocks={active.extraBlocks || []}
+                    parentClassName={active.extraClass || ''}
+                    onChange={(b) => updateSection(active.id, { extraBlocks: b })}
+                    onParentClassChange={(v) => updateSection(active.id, { extraClass: v })}
+                  />
+                </TabsContent>
+                <TabsContent value="html" className="mt-4">
+                  <Button variant="outline" onClick={() => setHtmlSection(active)} className="w-full border-zinc-800 bg-zinc-950"><FileCode2 className="size-4 mr-2" /> Open HTML code view</Button>
+                  <div className="text-xs text-zinc-500 mt-3 leading-relaxed">View the generated HTML for this section. Copy it to use anywhere or hand-tweak it externally.</div>
+                </TabsContent>
+              </Tabs>
             </>
           )}
         </SheetContent>

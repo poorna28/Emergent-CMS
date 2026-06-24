@@ -1,12 +1,54 @@
 import React from 'react';
 import {
   ArrowRight, Quote, Type, Clock, Users, Sparkles, Image as ImageIcon,
-  Code2, Mail, Plus, Minus
+  Code2, Mail, Plus, Minus, Grid3x3, Layers, Smartphone, Eye
 } from 'lucide-react';
+import { BLOCK_TYPES } from './SectionBlocks';
 
-const featureIcons = { Type, Clock, Users, Sparkles, Image: ImageIcon, Code2 };
+const featureIcons = { Type, Clock, Users, Sparkles, Image: ImageIcon, Code2, Grid3x3, Layers, Smartphone, Plus, Eye };
+
+function ExtraBlock({ block }) {
+  const cls = block.className || '';
+  switch (block.type) {
+    case 'h1': return <h1 className={`serif text-4xl font-semibold tracking-tight ${cls}`}>{block.content}</h1>;
+    case 'h2': return <h2 className={`serif text-3xl font-semibold tracking-tight ${cls}`}>{block.content}</h2>;
+    case 'h3': return <h3 className={`serif text-2xl font-semibold ${cls}`}>{block.content}</h3>;
+    case 'p': return <p className={`text-zinc-300 leading-relaxed ${cls}`}>{block.content}</p>;
+    case 'span': return <span className={`text-zinc-300 ${cls}`}>{block.content}</span>;
+    case 'ul': return <ul className={`list-disc pl-6 space-y-1 text-zinc-300 ${cls}`}>{(block.items || []).map((it, i) => <li key={i}>{it}</li>)}</ul>;
+    case 'ol': return <ol className={`list-decimal pl-6 space-y-1 text-zinc-300 ${cls}`}>{(block.items || []).map((it, i) => <li key={i}>{it}</li>)}</ol>;
+    case 'button': return <button className={`bg-emerald-500 hover:bg-emerald-400 text-zinc-950 px-4 py-2 rounded-md text-sm font-medium transition-colors ${cls}`}>{block.content}</button>;
+    case 'a': return <a href={block.href || '#'} className={`text-emerald-400 hover:text-emerald-300 underline-offset-4 hover:underline ${cls}`}>{block.content}</a>;
+    case 'blockquote': return <blockquote className={`border-l-2 border-emerald-400 pl-4 italic text-zinc-300 ${cls}`}>{block.content}<footer className="text-sm text-zinc-500 not-italic mt-2">— {block.author}</footer></blockquote>;
+    case 'code': return <code className={`mono text-sm bg-zinc-900 border border-zinc-800 rounded px-1.5 py-0.5 text-emerald-300 ${cls}`}>{block.content}</code>;
+    case 'pre': return <pre className={`mono text-sm bg-zinc-950 border border-zinc-800 rounded-lg p-4 overflow-x-auto text-zinc-200 ${cls}`}><code>{block.content}</code></pre>;
+    case 'img': return <img src={block.src} alt={block.alt} className={`rounded-lg w-full ${cls}`} />;
+    case 'hr': return <hr className={`border-zinc-800 ${cls}`} />;
+    case 'div': return <div className={cls} dangerouslySetInnerHTML={{ __html: block.html || '' }} />;
+    default: return null;
+  }
+}
+
+function ExtraBlocks({ section }) {
+  const blocks = section.extraBlocks || [];
+  if (blocks.length === 0) return null;
+  return (
+    <div className={`max-w-3xl mx-auto px-6 lg:px-10 py-6 space-y-4 ${section.extraClass || ''}`}>
+      {blocks.map(b => <ExtraBlock key={b.id} block={b} />)}
+    </div>
+  );
+}
 
 export default function SectionRenderer({ section, dark = true }) {
+  return (
+    <>
+      <SectionBody section={section} />
+      <ExtraBlocks section={section} />
+    </>
+  );
+}
+
+function SectionBody({ section }) {
   const c = section.content || {};
   switch (section.type) {
     case 'hero':
@@ -181,6 +223,28 @@ export default function SectionRenderer({ section, dark = true }) {
 
     case 'divider':
       return <section className="max-w-3xl mx-auto px-6 lg:px-10 py-6"><div className="h-px bg-zinc-900" /></section>;
+
+    case 'grid': {
+      const cols = c.cols || 3;
+      const gap = { sm: 'gap-2', md: 'gap-4', lg: 'gap-6' }[c.gap || 'md'];
+      const gridCols = { 1: 'grid-cols-1', 2: 'sm:grid-cols-2', 3: 'sm:grid-cols-2 lg:grid-cols-3', 4: 'sm:grid-cols-2 lg:grid-cols-4', 6: 'sm:grid-cols-3 lg:grid-cols-6' }[cols] || 'sm:grid-cols-3';
+      return (
+        <section className="max-w-6xl mx-auto px-6 lg:px-10 py-14 border-b border-zinc-900">
+          <div className={`grid grid-cols-1 ${gridCols} ${gap}`}>
+            {(c.items || []).map((it, i) => {
+              const Icon = featureIcons[it.icon] || Sparkles;
+              return (
+                <div key={i} className="rounded-xl border border-zinc-900 bg-zinc-950 p-5 hover:border-zinc-700 transition-colors">
+                  <div className="size-10 rounded-lg bg-emerald-400/10 ring-1 ring-emerald-400/20 grid place-items-center"><Icon className="size-5 text-emerald-400" /></div>
+                  <div className="mt-4 text-zinc-100 font-medium">{it.title}</div>
+                  <div className="text-sm text-zinc-400 mt-1.5 leading-relaxed">{it.text}</div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      );
+    }
 
     default:
       return <div className="p-6 text-zinc-500">Unknown section: {section.type}</div>;

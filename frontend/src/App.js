@@ -16,6 +16,8 @@ import Users from "./pages/admin/Users";
 import Tools from "./pages/admin/Tools";
 import Settings from "./pages/admin/Settings";
 import PageBuilder from "./pages/admin/PageBuilder";
+import Languages from "./pages/admin/Languages";
+import CodeEditor from "./pages/admin/CodeEditor";
 import BlogHome from "./pages/public/BlogHome";
 import BlogPost from "./pages/public/BlogPost";
 import SitePreview from "./pages/public/SitePreview";
@@ -43,6 +45,8 @@ function App() {
             <Route path="tools" element={<Tools />} />
             <Route path="settings" element={<Settings />} />
             <Route path="builder" element={<PageBuilder />} />
+            <Route path="languages" element={<Languages />} />
+            <Route path="code" element={<CodeEditor />} />
           </Route>
           <Route path="/site" element={<BlogHome />} />
           <Route path="/site/preview" element={<SitePreview />} />

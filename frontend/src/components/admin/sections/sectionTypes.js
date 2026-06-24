@@ -188,6 +188,28 @@ export const SECTION_TYPES = {
     defaults: {},
     fields: [],
   },
+  grid: {
+    name: 'Grid builder',
+    icon: 'Grid2x2',
+    group: 'Layout',
+    defaults: {
+      cols: 3,
+      gap: 'md',
+      items: [
+        { title: 'Cell one', text: 'Lightweight, composable. Drag anywhere.', icon: 'Sparkles' },
+        { title: 'Cell two', text: 'Tweak columns, gap and breakpoints in seconds.', icon: 'Grid3x3' },
+        { title: 'Cell three', text: 'Each cell holds its own typography and CTA.', icon: 'Layers' },
+        { title: 'Cell four', text: 'Responsive by default \u2014 collapses cleanly.', icon: 'Smartphone' },
+        { title: 'Cell five', text: 'Add as many cells as your story needs.', icon: 'Plus' },
+        { title: 'Cell six', text: 'Press preview to ship your layout.', icon: 'Eye' },
+      ],
+    },
+    fields: [
+      { key: 'cols', label: 'Columns', type: 'select', options: [1, 2, 3, 4, 6] },
+      { key: 'gap', label: 'Gap', type: 'select', options: ['sm', 'md', 'lg'] },
+      { key: 'items', label: 'Cells', type: 'items', shape: [{ key: 'title', label: 'Title' }, { key: 'text', label: 'Text' }, { key: 'icon', label: 'Icon' }] },
+    ],
+  },
 };
 
 export const DEFAULT_PAGE = [
@@ -208,6 +230,8 @@ export function makeSection(type) {
     id: 's' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
     type,
     content: JSON.parse(JSON.stringify(SECTION_TYPES[type].defaults)),
+    extraBlocks: [],
+    extraClass: '',
   };
 }
 

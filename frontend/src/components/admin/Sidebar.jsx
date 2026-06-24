@@ -3,7 +3,7 @@ import { NavLink, Link } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, FileType2, Image as ImageIcon, MessageSquare,
   Palette, Plug, Users, Wrench, Settings as SettingsIcon, ChevronLeft, ChevronRight,
-  Zap, ExternalLink, Layers
+  Zap, ExternalLink, Layers, Languages as LanguagesIcon, Code2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -17,6 +17,8 @@ const nav = [
   { to: '/admin/appearance', label: 'Appearance', icon: Palette },
   { to: '/admin/plugins', label: 'Plugins', icon: Plug },
   { to: '/admin/users', label: 'Users', icon: Users },
+  { to: '/admin/languages', label: 'Languages', icon: LanguagesIcon },
+  { to: '/admin/code', label: 'Code Editor', icon: Code2 },
   { to: '/admin/tools', label: 'Tools', icon: Wrench },
   { to: '/admin/settings', label: 'Settings', icon: SettingsIcon },
 ];
