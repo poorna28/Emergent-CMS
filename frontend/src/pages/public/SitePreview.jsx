@@ -4,12 +4,14 @@ import { Zap, Search, Pencil } from 'lucide-react';
 import { loadSections } from '@/components/admin/sections/sectionTypes';
 import SectionRenderer from '@/components/admin/sections/SectionRenderer';
 import { SITE_INFO } from '@/mock/mock';
+import { ThemedRoot } from '@/design/DesignProvider';
 
 export default function SitePreview() {
   const [sections, setSections] = useState([]);
   useEffect(() => { setSections(loadSections()); }, []);
 
   return (
+    <ThemedRoot>
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <header className="border-b border-zinc-900 sticky top-0 bg-zinc-950/85 backdrop-blur-md z-30">
         <div className="max-w-6xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
@@ -45,5 +47,6 @@ export default function SitePreview() {
         </div>
       </footer>
     </div>
+    </ThemedRoot>
   );
 }

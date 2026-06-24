@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
-import { Check, Brush, Menu as MenuIcon, LayoutGrid, Palette } from 'lucide-react';
+import { Check, Brush, Menu as MenuIcon, LayoutGrid, Palette, LayoutTemplate, Columns } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { THEMES } from '@/mock/mock';
+import ThemesAdmin from './appearance/ThemesAdmin';
+import TemplatesAdmin from './appearance/TemplatesAdmin';
+import LayoutsAdmin from './appearance/LayoutsAdmin';
 
 const tabs = [
-  { to: '/admin/appearance', label: 'Themes', icon: LayoutGrid, key: undefined },
+  { to: '/admin/appearance', label: 'Snapshots', icon: LayoutGrid, key: undefined },
+  { to: '/admin/appearance/themes', label: 'Themes', icon: Palette, key: 'themes' },
+  { to: '/admin/appearance/templates', label: 'Templates', icon: LayoutTemplate, key: 'templates' },
+  { to: '/admin/appearance/layouts', label: 'Layouts', icon: Columns, key: 'layouts' },
   { to: '/admin/appearance/customize', label: 'Customize', icon: Brush, key: 'customize' },
   { to: '/admin/appearance/menus', label: 'Menus', icon: MenuIcon, key: 'menus' },
   { to: '/admin/appearance/widgets', label: 'Widgets', icon: Palette, key: 'widgets' },
@@ -63,6 +69,10 @@ export default function Appearance() {
           ))}
         </div>
       )}
+
+      {tab === 'themes' && <ThemesAdmin />}
+      {tab === 'templates' && <TemplatesAdmin />}
+      {tab === 'layouts' && <LayoutsAdmin />}
 
       {tab === 'customize' && (
         <Card className="bg-zinc-900/60 border-zinc-800">

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Search, Zap } from 'lucide-react';
 import { POSTS, CATEGORIES, SITE_INFO } from '@/mock/mock';
+import { ThemedRoot } from '@/design/DesignProvider';
 
 export default function BlogHome() {
   const published = POSTS.filter(p => p.status === 'published');
@@ -9,6 +10,7 @@ export default function BlogHome() {
   const rest = published.slice(1);
 
   return (
+    <ThemedRoot>
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <header className="border-b border-zinc-900 sticky top-0 bg-zinc-950/85 backdrop-blur-md z-30">
         <div className="max-w-6xl mx-auto px-6 lg:px-10 h-16 flex items-center justify-between">
@@ -85,5 +87,6 @@ export default function BlogHome() {
         </div>
       </footer>
     </div>
+    </ThemedRoot>
   );
 }

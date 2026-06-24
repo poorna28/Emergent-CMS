@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
+import { DesignProvider } from "@/design/DesignProvider";
 
 import AdminLayout from "./components/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
@@ -22,7 +23,8 @@ import SitePreview from "./pages/public/SitePreview";
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
+      <DesignProvider>
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/admin" replace />} />
           <Route path="/admin" element={<AdminLayout />}>
@@ -35,6 +37,7 @@ function App() {
             <Route path="comments" element={<Comments />} />
             <Route path="appearance" element={<Appearance />} />
             <Route path="appearance/:tab" element={<Appearance />} />
+            <Route path="appearance/:tab/*" element={<Appearance />} />
             <Route path="plugins" element={<Plugins />} />
             <Route path="users" element={<Users />} />
             <Route path="tools" element={<Tools />} />
@@ -46,7 +49,8 @@ function App() {
           <Route path="/site/:slug" element={<BlogPost />} />
         </Routes>
         <Toaster />
-      </BrowserRouter>
+        </BrowserRouter>
+      </DesignProvider>
     </div>
   );
 }

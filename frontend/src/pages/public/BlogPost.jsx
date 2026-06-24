@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Bookmark, Share2, Heart, MessageSquare, Zap } from 'lucide-react';
 import { POSTS, SITE_INFO } from '@/mock/mock';
+import { ThemedRoot } from '@/design/DesignProvider';
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -9,6 +10,7 @@ export default function BlogPost() {
   const related = POSTS.filter(p => p.id !== post.id && p.status === 'published').slice(0, 3);
 
   return (
+    <ThemedRoot>
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
       <header className="border-b border-zinc-900 sticky top-0 bg-zinc-950/85 backdrop-blur-md z-30">
         <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -78,5 +80,6 @@ export default function BlogPost() {
         </div>
       </section>
     </div>
+    </ThemedRoot>
   );
 }
