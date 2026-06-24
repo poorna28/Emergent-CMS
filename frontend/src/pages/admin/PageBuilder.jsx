@@ -215,7 +215,7 @@ export default function PageBuilder() {
         </div>
       </div>
 
-      <SectionHTMLView open={!!htmlSection} onOpenChange={(o) => { if (!o) setHtmlSection(null); }} section={htmlSection} />
+      <SectionHTMLView open={!!htmlSection} onOpenChange={(o) => { if (!o) setHtmlSection(null); }} section={htmlSection} onSave={(id, patch) => { updateSection(id, patch); setHtmlSection(prev => prev && prev.id === id ? { ...prev, ...patch } : prev); }} />
 
       <Sheet open={!!active} onOpenChange={(o) => { if (!o) setActiveId(null); }}>
         <SheetContent className="bg-zinc-900 border-zinc-800 text-zinc-100 w-full sm:max-w-lg overflow-y-auto">

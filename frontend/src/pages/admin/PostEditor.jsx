@@ -48,11 +48,43 @@ export default function PostEditor() {
     });
   };
 
+  const editorRef = React.useRef(null);
+  const applyFormat = (kind) => {
+    const ta = editorRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const before = content.slice(0, start);
+    const sel = content.slice(start, end);
+    const after = content.slice(end);
+    const wrappers = {
+      bold: { open: '**', close: '**', placeholder: 'bold text' },
+      italic: { open: '*', close: '*', placeholder: 'italic text' },
+      h2: { open: '\n## ', close: '\n', placeholder: 'Heading' },
+      h3: { open: '\n### ', close: '\n', placeholder: 'Subheading' },
+      list: { open: '\n- ', close: '\n- Second item\n- Third item\n', placeholder: 'First item' },
+      quote: { open: '\n> ', close: '\n', placeholder: 'A memorable quote.' },
+      link: { open: '[', close: '](https://)', placeholder: 'link text' },
+      code: { open: '`', close: '`', placeholder: 'code' },
+    };
+    const w = wrappers[kind];
+    if (!w) return;
+    const insertion = w.open + (sel || w.placeholder) + w.close;
+    const next = before + insertion + after;
+    setContent(next);
+    setTimeout(() => {
+      ta.focus();
+      const pos = start + w.open.length + (sel || w.placeholder).length;
+      ta.setSelectionRange(pos, pos);
+    }, 0);
+  };
+  const aiRewrite = () => { toast({ title: 'AI rewrite', description: 'Polishing your draft…' }); };
+
   const tools = [
-    { i: Bold, label: 'Bold' }, { i: Italic, label: 'Italic' },
-    { i: Heading2, label: 'H2' }, { i: Heading3, label: 'H3' },
-    { i: List, label: 'List' }, { i: Quote, label: 'Quote' },
-    { i: LinkIcon, label: 'Link' }, { i: Code2, label: 'Code' },
+    { i: Bold, label: 'Bold', k: 'bold' }, { i: Italic, label: 'Italic', k: 'italic' },
+    { i: Heading2, label: 'H2', k: 'h2' }, { i: Heading3, label: 'H3', k: 'h3' },
+    { i: List, label: 'List', k: 'list' }, { i: Quote, label: 'Quote', k: 'quote' },
+    { i: LinkIcon, label: 'Link', k: 'link' }, { i: Code2, label: 'Code', k: 'code' },
   ];
 
   return (
@@ -88,16 +120,17 @@ export default function PostEditor() {
               <Separator className="bg-zinc-800" />
               <div className="flex items-center gap-1 flex-wrap">
                 {tools.map((t, i) => (
-                  <button key={i} title={t.label} className="size-9 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100 grid place-items-center transition-colors">
+                  <button key={i} type="button" onClick={() => applyFormat(t.k)} title={t.label} className="size-9 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100 grid place-items-center transition-colors">
                     <t.i className="size-4" />
                   </button>
                 ))}
                 <div className="h-5 w-px bg-zinc-800 mx-1" />
-                <button className="text-xs px-2.5 py-1.5 rounded-md text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/15 inline-flex items-center gap-1.5">
+                <button type="button" onClick={aiRewrite} className="text-xs px-2.5 py-1.5 rounded-md text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/15 inline-flex items-center gap-1.5">
                   <Sparkles className="size-3.5" /> AI rewrite
                 </button>
               </div>
               <Textarea
+                ref={editorRef}
                 value={content}
                 onChange={(e)=>setContent(e.target.value)}
                 placeholder="Start writing…"

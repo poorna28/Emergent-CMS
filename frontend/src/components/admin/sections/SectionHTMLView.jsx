@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, FileCode2 } from 'lucide-react';
+import { Copy, FileCode2, Save, RotateCcw, Pencil } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import MonacoLite from '@/components/admin/MonacoLite';
 import { SECTION_TYPES } from '@/components/admin/sections/sectionTypes';
@@ -145,27 +145,56 @@ export function sectionToHTML(section) {
   return body;
 }
 
-export default function SectionHTMLView({ open, onOpenChange, section }) {
+export default function SectionHTMLView({ open, onOpenChange, section, onSave }) {
   const { toast } = useToast();
+  const [code, setCode] = useState('');
+  const [editing, setEditing] = useState(false);
+
+  useEffect(() => {
+    if (section) {
+      // Show custom HTML if previously saved, else show generated default
+      setCode(section.customHTML || sectionToHTML(section));
+      setEditing(false);
+    }
+  }, [section]);
+
   if (!section) return null;
-  const html = sectionToHTML(section);
-  const copy = () => { navigator.clipboard.writeText(html); toast({ title: 'HTML copied' }); };
+  const isCustomized = !!section.customHTML;
+  const defaultHTML = sectionToHTML(section);
+
+  const copy = () => { navigator.clipboard.writeText(code); toast({ title: 'HTML copied' }); };
+  const save = () => {
+    if (onSave) onSave(section.id, { customHTML: code });
+    toast({ title: 'HTML saved', description: 'Custom override now renders on the page.' });
+    setEditing(false);
+  };
+  const reset = () => {
+    setCode(defaultHTML);
+    if (onSave) onSave(section.id, { customHTML: null });
+    toast({ title: 'Reverted to default', description: 'Section reverted to its component renderer.' });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 border-zinc-800 max-w-3xl">
+      <DialogContent className="bg-zinc-900 border-zinc-800 max-w-4xl">
         <DialogHeader>
           <DialogTitle className="text-zinc-100 flex items-center gap-2">
             <FileCode2 className="size-4 text-emerald-400" />
             HTML for {SECTION_TYPES[section.type]?.name || section.type}
-            <Badge variant="outline" className="border-zinc-700 text-zinc-400 text-[10px] ml-2">read-only</Badge>
+            {isCustomized && <Badge variant="outline" className="border-emerald-400/30 text-emerald-300 bg-emerald-400/5 text-[10px]">customized</Badge>}
+            <Badge variant="outline" className={`text-[10px] ml-1 ${editing ? 'border-amber-400/30 text-amber-300 bg-amber-400/5' : 'border-zinc-700 text-zinc-400'}`}>{editing ? 'editing' : 'editable'}</Badge>
           </DialogTitle>
         </DialogHeader>
-        <div className="flex items-center justify-between">
-          <div className="text-xs text-zinc-500">Generated from the section’s content. Copy and paste into any project.</div>
-          <Button size="sm" variant="outline" onClick={copy} className="border-zinc-800 bg-zinc-950"><Copy className="size-3.5 mr-1" /> Copy</Button>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="text-xs text-zinc-500">Edit the HTML directly — changes save to this section and render on the public page.</div>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="outline" onClick={copy} className="border-zinc-800 bg-zinc-950"><Copy className="size-3.5 mr-1" /> Copy</Button>
+            {isCustomized && <Button size="sm" variant="outline" onClick={reset} className="border-zinc-800 bg-zinc-950 text-amber-300"><RotateCcw className="size-3.5 mr-1" /> Revert</Button>}
+            {!editing && <Button size="sm" variant="outline" onClick={() => setEditing(true)} className="border-zinc-800 bg-zinc-950"><Pencil className="size-3.5 mr-1" /> Edit</Button>}
+            <Button size="sm" onClick={save} className="bg-emerald-500 hover:bg-emerald-400 text-zinc-950"><Save className="size-3.5 mr-1" /> Save HTML</Button>
+          </div>
         </div>
-        <MonacoLite language="html" value={html} readOnly height={420} />
+        <MonacoLite language="html" value={code} onChange={(v) => { setEditing(true); setCode(v); }} readOnly={false} height={440} />
       </DialogContent>
     </Dialog>
   );

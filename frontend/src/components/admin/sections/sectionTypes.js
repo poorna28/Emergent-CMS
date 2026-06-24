@@ -210,6 +210,112 @@ export const SECTION_TYPES = {
       { key: 'items', label: 'Cells', type: 'items', shape: [{ key: 'title', label: 'Title' }, { key: 'text', label: 'Text' }, { key: 'icon', label: 'Icon' }] },
     ],
   },
+  tabs: {
+    name: 'Tabs', icon: 'Tags', group: 'Interactive',
+    defaults: {
+      items: [
+        { label: 'Editor', content: 'A keyboard-first block editor. Inline AI suggestions, markdown shortcuts and quiet autosave.' },
+        { label: 'Workflow', content: 'Editors, authors and contributors with sensible defaults. Approval flows for high-stakes posts.' },
+        { label: 'Analytics', content: 'Three numbers that move the needle: read time, finished reads, subscriber lift.' },
+        { label: 'API', content: 'A clean REST surface for every entity. Webhooks fire on publish, edit, delete.' },
+      ],
+    },
+    fields: [{ key: 'items', label: 'Tabs', type: 'items', shape: [{ key: 'label', label: 'Label' }, { key: 'content', label: 'Content' }] }],
+  },
+  form: {
+    name: 'Form', icon: 'FormInput', group: 'Interactive',
+    defaults: {
+      title: 'Get in touch', subtitle: 'We typically reply within one business day.', submitLabel: 'Send message',
+      formFields: [
+        { label: 'Full name', type: 'text', placeholder: 'Mira Chen' },
+        { label: 'Email', type: 'email', placeholder: 'you@studio.com' },
+        { label: 'Company', type: 'text', placeholder: 'Pulse Labs' },
+        { label: 'How can we help?', type: 'textarea', placeholder: 'A few words…' },
+      ],
+    },
+    fields: [
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'subtitle', label: 'Subtitle', type: 'text' },
+      { key: 'submitLabel', label: 'Submit label', type: 'text' },
+      { key: 'formFields', label: 'Fields', type: 'items', shape: [{ key: 'label', label: 'Label' }, { key: 'type', label: 'Type' }, { key: 'placeholder', label: 'Placeholder' }] },
+    ],
+  },
+  list: {
+    name: 'List', icon: 'List', group: 'Text',
+    defaults: {
+      title: 'What you get',
+      items: [
+        { title: 'Unlimited posts and pages', text: 'No artificial caps, ever.' },
+        { title: 'Custom domains', text: 'SSL provisioned automatically.' },
+        { title: 'Open REST + GraphQL API', text: 'Build any front-end you want.' },
+        { title: 'Daily backups', text: 'Per-region, encrypted at rest.' },
+      ],
+    },
+    fields: [
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'items', label: 'Items', type: 'items', shape: [{ key: 'title', label: 'Title' }, { key: 'text', label: 'Text' }] },
+    ],
+  },
+  card: {
+    name: 'Card', icon: 'CreditCard', group: 'Layout',
+    defaults: { title: 'Try Pulse free for two editors', text: 'Spin up a publication in under 60 seconds. No credit card required.', ctaLabel: 'Start free', image: '' },
+    fields: [
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'text', label: 'Text', type: 'textarea' },
+      { key: 'ctaLabel', label: 'CTA label', type: 'text' },
+      { key: 'image', label: 'Image (optional)', type: 'image' },
+    ],
+  },
+  wizard: {
+    name: 'Wizard', icon: 'ListChecks', group: 'Interactive',
+    defaults: {
+      title: 'Launch in four steps',
+      steps: [
+        { label: 'Create account', text: 'Pick a publication name and an editor seat.' },
+        { label: 'Choose theme', text: 'Start from a starter or import your own.' },
+        { label: 'Invite team', text: 'Add editors, authors and contributors.' },
+        { label: 'Publish first post', text: 'Hit publish — we handle the CDN.' },
+      ],
+    },
+    fields: [
+      { key: 'title', label: 'Title', type: 'text' },
+      { key: 'steps', label: 'Steps', type: 'items', shape: [{ key: 'label', label: 'Label' }, { key: 'text', label: 'Text' }] },
+    ],
+  },
+  custom_code: {
+    name: 'Custom code', icon: 'Braces', group: 'Developer',
+    defaults: {
+      html: '<div class="custom-block">\n  <h2>Custom HTML block</h2>\n  <p>Drop any HTML, inline styles or embeds here.</p>\n</div>',
+      css: '.custom-block { padding: 4rem 1.5rem; max-width: 48rem; margin: 0 auto; text-align: center; }\n.custom-block h2 { font-size: 2rem; letter-spacing: -0.02em; }\n.custom-block p { color: #a1a1aa; margin-top: 0.5rem; }',
+    },
+    fields: [
+      { key: 'html', label: 'HTML', type: 'monaco-html' },
+      { key: 'css', label: 'CSS', type: 'monaco-css' },
+    ],
+  },
+  slider: {
+    name: 'Slider', icon: 'GalleryHorizontal', group: 'Media',
+    defaults: {
+      autoplay: true,
+      slides: [
+        { title: 'Editorial that ships', text: 'Built for teams who publish weekly.', image: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?w=1200' },
+        { title: 'Calm software', text: 'Distraction-free writing, every time.', image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200' },
+        { title: 'Hosted, fast, secure', text: 'Edge-cached on every continent.', image: 'https://images.pexels.com/photos/15005692/pexels-photo-15005692.jpeg?w=1200' },
+      ],
+    },
+    fields: [
+      { key: 'autoplay', label: 'Autoplay', type: 'switch' },
+      { key: 'slides', label: 'Slides', type: 'items', shape: [{ key: 'title', label: 'Title' }, { key: 'text', label: 'Text' }, { key: 'image', label: 'Image URL' }] },
+    ],
+  },
+  marquee: {
+    name: 'Marquee', icon: 'ArrowRightLeft', group: 'Media',
+    defaults: { speed: 'normal', items: [{ text: 'Trusted by 12,000+ writers' }, { text: 'Featured in Sidebar' }, { text: 'Featured in Dense Discovery' }, { text: '99.99% uptime' }, { text: 'Self-hosting available' }, { text: 'Open-source friendly' }] },
+    fields: [
+      { key: 'speed', label: 'Speed', type: 'select', options: ['slow', 'normal', 'fast'] },
+      { key: 'items', label: 'Items', type: 'items', shape: [{ key: 'text', label: 'Text' }] },
+    ],
+  },
 };
 
 export const DEFAULT_PAGE = [
